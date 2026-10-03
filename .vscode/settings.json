@@ -1,0 +1,16 @@
+{
+    "cmake.useCMakePresets": "always",
+    "cmake.configureOnOpen": true,
+    "explorer.fileNesting.enabled": true,
+    "explorer.fileNesting.expand": false,
+
+    "explorer.fileNesting.patterns": {
+        "current.cpp": "template.cpp,test.cpp,*.hpp,README.md"
+    },
+
+    "files.exclude": {
+        "**/build": true,
+        "**/.DS_Store": true
+    }
+
+}

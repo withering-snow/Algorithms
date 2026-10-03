@@ -1,0 +1,20 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "Algorithm: Reset Current",
+            "type": "shell",
+            "command": "/usr/bin/env",
+            "args": [
+                "python3",
+                "${workspaceFolder}/tools/reset_current.py",
+                "${fileDirname}"
+            ],
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "silent",
+                "panel": "shared"
+            }
+        }
+    ]
+}
