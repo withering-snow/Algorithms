@@ -8,4 +8,5 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 
 enable_testing()
 
+add_subdirectory(DataStructure)
 add_subdirectory(String)
