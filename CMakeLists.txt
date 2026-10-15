@@ -10,3 +10,4 @@ enable_testing()
 
 add_subdirectory(SparseMatrix)
 add_subdirectory(String)
+add_subdirectory(Tree)
