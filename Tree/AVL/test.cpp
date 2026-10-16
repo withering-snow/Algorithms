@@ -5,6 +5,7 @@
 #include <climits>
 #include <cstdlib>
 #include <iostream>
+#include <set>
 #include <random>
 
 struct AVLInspector {
@@ -392,28 +393,102 @@ void testNext() {
     assert(tree.next(40) == INT_MAX);
 }
 
-void testRandomInsertRemove() {
+void checkSame(AVL &tree, const std::multiset<int> &ref) {
+    int i = 0;
+    for (const auto val : ref) {
+        assert(tree.kth(++i) == val);
+    }
+    assert(tree.kth(++i) == -1);
+}
+
+void testRandomDuplicateHeavy(unsigned seed) {
     AVL tree;
-
-    std::mt19937 rng(12345);
+    std::multiset<int> ref;
+    std::mt19937 rng(seed);
     std::uniform_int_distribution<int> opDist(0, 1);
-    std::uniform_int_distribution<int> valueDist(-50, 50);
-
-    for (int step = 0; step < 1000; ++step) {
+    std::uniform_int_distribution<int> valueDist(1, 100);
+    for (int step = 0; step < 10000; ++step) {
         int op = opDist(rng);
         int val = valueDist(rng);
         if (op == 0) {
             tree.insert(val);
+            ref.insert(val);
         } else {
             tree.remove(val);
+            auto it = ref.find(val);
+            if (it != ref.end()) {
+                ref.erase(it);
+            }
         }
         AVLInspector::check(tree);
+        checkSame(tree, ref);
     }
 }
 
-int main() {
-    testInsertLL();
+void testRandomLargeScale(unsigned seed) {
+    AVL tree;
+    std::multiset<int> ref;
+    std::mt19937 rng(seed);
+    std::uniform_int_distribution<int> opDist(0, 1);
+    std::uniform_int_distribution<int> valueDist(1, 100000);
+    for (int step = 0; step < 100000; ++step) {
+        int op = opDist(rng);
+        int val = valueDist(rng);
+        if (op == 0) {
+            tree.insert(val);
+            ref.insert(val);
+        } else {
+            tree.remove(val);
+            auto it = ref.find(val);
+            if (it != ref.end()) {
+                ref.erase(it);
+            }
+        }
+        if (step % 1000 == 0) {
+            AVLInspector::check(tree);
+        }
+        if (step % 10000 == 0) {
+            checkSame(tree, ref);
+        }
+    }
+    AVLInspector::check(tree);
+    checkSame(tree, ref);
+}
 
+void test() {
+    // Insert && Rotate test
+    testInsertLL();
+    testInsertRR();
+    testInsertLR();
+    testInsertRL();
+    // Duplicate Value test
+    testInsertDuplicate();
+    testRemoveDuplicate();
+    // Remove test
+    testRemoveLeaf();
+    testRemoveOneChild();
+    testRemoveTwoChildren();
+    testRemoveNone();
+    testRemoveCascadeRebalance();
+    // Info test
+    testRank();
+    testKth();
+    testPrev();
+    testNext();
+    // Stress test
+    for (unsigned seed : {12345u, 54321u}) {
+        testRandomDuplicateHeavy(seed);
+        testRandomLargeScale(seed);
+    }
+    std::random_device rd;
+    unsigned seed = rd();
+    std::cout << "Random test seed: " << seed << '\n';
+    testRandomDuplicateHeavy(seed);
+    testRandomLargeScale(seed);
+}
+
+int main() {
+    test();
     std::cout << "All tests passed.\n";
     return 0;
 }
